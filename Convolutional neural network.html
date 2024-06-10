@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Object Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #inputImage {
+            margin: 20px;
+        }
+        #image {
+            max-width: 300px;
+            max-height: 300px;
+            margin: 20px;
+        }
+        #predictionResults {
+            margin: 20px;
+        }
+        #predictionResults p {
+            margin: 5px;
+        }
+        #loadingAnimation {
+            display: none;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Object Recognition</h1>
+    <input type="file" id="inputImage" accept="image/*">
+    <img id="image" src="">
+    <div id="loadingAnimation">
+        <img src="loading.gif" alt="Loading Animation">
+    </div>
+    <div id="predictionResults"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <script>
+        /*Сверточная нейронная сеть (CNN) - это тип нейронной сети, который обычно используется для обработки и анализа изображений.
+        Они способны извлекать важные признаки из входных данных с помощью операций свертки и пулинга. Сверточные слои помогают нейронной сети "понимать" пространственные иерархии признаков в изображениях, что делает их эффективными для задач компьютерного зрения.*/
+        async function predictImage(imageElement) {
+            const model = await mobilenet.load();
+            const predictions = await model.classify(imageElement);
+            const predictionResults = document.getElementById('predictionResults');
+            predictionResults.innerHTML = ''; // Очистить предыдущие результаты
+            predictions.forEach(prediction => {
+                const p = document.createElement('p');
+                p.innerText = `${prediction.className}: ${prediction.probability}`;
+                predictionResults.appendChild(p);
+            });
+            const loadingAnimation = document.getElementById('loadingAnimation');
+            loadingAnimation.style.display = 'none';
+        }
+
+        document.getElementById('inputImage').addEventListener('change', async function() {
+            const file = this.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageElement = document.getElementById('image');
+                imageElement.src = e.target.result;
+
+                const loadingAnimation = document.getElementById('loadingAnimation');
+                loadingAnimation.style.display = 'block';
+                predictImage(imageElement);
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
