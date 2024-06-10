@@ -1,0 +1,77 @@
+let weights = [];
+
+function initializeWeights(numInputs, numOutputs) { // Инициализируем веса связей между нейронами случайными значениями
+  for (let i = 0; i < numInputs; i++) {
+    let row = [];
+    for (let j = 0; j < numOutputs; j++) {
+      row.push(Math.random());
+    }
+    weights.push(row);
+  }
+}
+initializeWeights(10, 10); // инициализируем веса связей для 10 входов и 10 выходов
+// Предъявляем образ на вход сети
+let inputs = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+
+// Вычисляем выходной сигнал каждого нейрона на основе входных данных и текущих весов связей
+function calculateOutput(inputs) {
+  let outputs = [];
+  for (let i = 0; i < weights[0].length; i++) {
+    let output = 0;
+    for (let j = 0; j < inputs.length; j++) {
+      output += Math.round(inputs[j] * weights[j][i]);
+    }
+    outputs.push(output);
+  }
+  return outputs;
+}
+
+
+// Изменяем веса связей между нейронами в зависимости от разности между выходным сигналом и желаемым выходным сигналом
+function adjustWeights(inputs, desiredOutput) {
+  let actualOutput = calculateOutput(inputs);
+  for (let i = 0; i < inputs.length; i++) {
+    for (let j = 0; j < weights[0].length; j++) {
+      weights[i][j] += Math.round(inputs[i] * (actualOutput[j] - desiredOutput[j]));
+    }
+  }
+}
+
+// Обучение сети на обучающей выборке
+let trainingSet = [
+  {inputs: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0], output: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]},
+ /* {inputs: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1], output: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]},
+  {inputs: [1, 1, 0, 1, 0, 1, 0, 1, 0, 1], output: [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]},
+  {inputs: [0, 1, 0, 1, 0, 1, 1, 1, 0, 1], output: [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]},
+  {inputs: [1, 0, 0, 1, 0, 0, 0, 1, 0, 1], output: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]},
+  {inputs: [1, 1, 1, 1, 1, 1, 0, 1, 0, 1], output: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]},
+  {inputs: [0, 1, 0, 1, 0, 0, 0, 1, 0, 1], output: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]},
+  {inputs: [0, 0, 1, 0, 1, 1, 0, 1, 0, 1], output: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]},
+  {inputs: [1, 0, 1, 1, 0, 1, 0, 1, 1, 1], output: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]},
+  {inputs: [1, 0, 1, 1, 0, 1, 1, 1, 0, 1], output: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]},*/
+  // Добавляем образы для цифр от 2 до 9
+];
+
+for (let i = 0; i < trainingSet.length; i++) {
+  adjustWeights(trainingSet[i].inputs, trainingSet[i].output);
+}
+
+// Проверка работы сети на тестовой выборке
+let testSet = [
+  {inputs: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0], output: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]},
+  {inputs: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1], output: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]},
+  {inputs: [1, 1, 0, 1, 0, 1, 0, 1, 0, 1], output: [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]},
+  {inputs: [0, 1, 0, 1, 0, 1, 1, 1, 0, 1], output: [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]},
+  {inputs: [1, 0, 0, 1, 0, 0, 0, 1, 0, 1], output: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]},
+  {inputs: [1, 1, 1, 1, 1, 1, 0, 1, 0, 1], output: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]},
+  {inputs: [0, 1, 0, 1, 0, 0, 0, 1, 0, 1], output: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]},
+  {inputs: [0, 0, 1, 0, 1, 1, 0, 1, 0, 1], output: [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]},
+  {inputs: [1, 0, 1, 1, 0, 1, 0, 1, 1, 1], output: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]},
+  {inputs: [1, 0, 1, 1, 0, 1, 1, 1, 0, 1], output: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]},
+  // Добавляем образы для цифр от 2 до 9
+];
+for (let i = 0; i < testSet.length; i++) {
+  let actualOutput = calculateOutput(testSet[i].inputs);
+  //console.log(`Expected output: ${testSet[i].output}`);
+  console.log(`Actual output: ${actualOutput}`);
+}
